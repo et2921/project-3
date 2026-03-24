@@ -39,8 +39,11 @@ function LoginForm() {
         <ThemeToggle />
       </div>
       <div className="w-full max-w-sm">
-        <h1 className="text-2xl font-bold mb-2 text-center">Humor Flavor Tool</h1>
-        <p className="text-sm text-gray-500 text-center mb-8">Sign in with your Google account</p>
+        <div className="text-center mb-6">
+          <div className="text-5xl mb-3">🍦</div>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">Scoop Shop</h1>
+          <p className="text-sm text-gray-500 mt-1">Sign in to start scooping</p>
+        </div>
         {errorMessage && (
           <p className="text-sm text-red-500 mb-4 text-center">{errorMessage}</p>
         )}

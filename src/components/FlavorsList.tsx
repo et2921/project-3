@@ -17,7 +17,7 @@ export function FlavorsList({ initialFlavors }: { initialFlavors: HumorFlavor[] 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Humor Flavors</h1>
+        <h1 className="text-2xl font-bold">🧪 Flavor Lab</h1>
         <button
           onClick={() => setShowCreate(true)}
           className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"

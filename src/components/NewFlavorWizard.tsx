@@ -115,11 +115,11 @@ export function NewFlavorWizard({ inputTypes, outputTypes, models, stepTypes, on
         <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 mb-6 transition-colors">
           ← Back
         </button>
-        <div className="flex items-center gap-3 mb-6 p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/30">
+        <div className="flex items-center gap-3 mb-6 p-4 rounded-xl bg-violet-950/30 border border-violet-500/30">
           <span className="text-3xl">✅</span>
           <div>
-            <p className="font-semibold text-emerald-400">Flavor created!</p>
-            <p className="text-sm text-gray-400">&ldquo;{createdFlavor.description}&rdquo; — 3 AI-generated steps</p>
+            <p className="font-semibold text-violet-400">Your flavor is churned! 🎉</p>
+            <p className="text-sm text-gray-400">&ldquo;{createdFlavor.description}&rdquo; — 3 AI-generated scoops</p>
           </div>
         </div>
         <h3 className="font-semibold text-lg mb-4">Test your new flavor</h3>
@@ -136,12 +136,12 @@ export function NewFlavorWizard({ inputTypes, outputTypes, models, stepTypes, on
 
       <div className="mb-8">
         <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
-          <span className="font-medium">New Flavor Wizard</span>
+          <span className="font-medium">🍨 Flavor Churner</span>
           <span>Step {step + 1} of 4</span>
         </div>
         <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-500"
+            className="h-full bg-gradient-to-r from-violet-500 to-teal-400 rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -157,14 +157,14 @@ export function NewFlavorWizard({ inputTypes, outputTypes, models, stepTypes, on
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Existential Dread Comedian"
-            className="w-full px-4 py-3 rounded-xl border border-gray-700 bg-gray-900/80 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-base"
+            className="w-full px-4 py-3 rounded-xl border border-gray-700 bg-gray-900/80 focus:outline-none focus:ring-2 focus:ring-violet-500 text-base"
             onKeyDown={(e) => e.key === "Enter" && name.trim() && setStep(1)}
           />
           {name && <p className="text-xs text-gray-600 mt-2">/{slugify(name)}</p>}
           <button
             disabled={!name.trim()}
             onClick={() => setStep(1)}
-            className="mt-4 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white rounded-xl font-medium transition-colors text-sm"
+            className="mt-4 px-6 py-2.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white rounded-xl font-medium transition-colors text-sm"
           >
             Continue →
           </button>
@@ -180,7 +180,7 @@ export function NewFlavorWizard({ inputTypes, outputTypes, models, stepTypes, on
               <button
                 key={h.value}
                 onClick={() => { setHumorType(h.value); setStep(2); }}
-                className="p-4 rounded-xl border border-gray-700 bg-gray-900/50 hover:border-emerald-500/50 hover:bg-emerald-950/20 text-left transition-all hover:scale-[1.02]"
+                className="p-4 rounded-xl border border-gray-700 bg-gray-900/50 hover:border-violet-500/50 hover:bg-violet-950/20 text-left transition-all hover:scale-[1.02]"
               >
                 <div className="text-2xl mb-2">{h.emoji}</div>
                 <div className="font-medium text-sm">{h.value}</div>
@@ -203,7 +203,7 @@ export function NewFlavorWizard({ inputTypes, outputTypes, models, stepTypes, on
               <button
                 key={t.value}
                 onClick={() => { setTone(t.value); setStep(3); }}
-                className="p-4 rounded-xl border border-gray-700 bg-gray-900/50 hover:border-emerald-500/50 hover:bg-emerald-950/20 text-left transition-all hover:scale-[1.02]"
+                className="p-4 rounded-xl border border-gray-700 bg-gray-900/50 hover:border-violet-500/50 hover:bg-violet-950/20 text-left transition-all hover:scale-[1.02]"
               >
                 <div className="text-2xl mb-2">{t.emoji}</div>
                 <div className="font-medium text-sm">{t.value}</div>
@@ -226,7 +226,7 @@ export function NewFlavorWizard({ inputTypes, outputTypes, models, stepTypes, on
             onChange={(e) => setInstructions(e.target.value)}
             rows={4}
             placeholder="e.g. Always reference 90s movies. Keep captions under 10 words."
-            className="w-full px-4 py-3 rounded-xl border border-gray-700 bg-gray-900/80 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm resize-none"
+            className="w-full px-4 py-3 rounded-xl border border-gray-700 bg-gray-900/80 focus:outline-none focus:ring-2 focus:ring-violet-500 text-sm resize-none"
           />
           {error && <p className="text-sm text-red-400 mt-2">{error}</p>}
           <div className="flex gap-3 mt-4">
@@ -239,14 +239,14 @@ export function NewFlavorWizard({ inputTypes, outputTypes, models, stepTypes, on
             <button
               onClick={handleGenerate}
               disabled={generating}
-              className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white rounded-xl font-medium transition-colors flex items-center gap-2 text-sm"
+              className="px-6 py-2.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white rounded-xl font-medium transition-colors flex items-center gap-2 text-sm"
             >
               {generating ? (
                 <>
                   <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   Generating...
                 </>
-              ) : "✨ Generate Flavor"}
+              ) : "🍨 Churn this Flavor"}
             </button>
           </div>
         </div>

@@ -15,24 +15,24 @@ export function ExistingFlavorMode({ flavors, onBack }: Props) {
   return (
     <div>
       <BackButton onBack={onBack} />
-      <h2 className="text-2xl font-bold mb-1">Existing Flavor</h2>
-      <p className="text-gray-400 text-sm mb-6">Choose a humor flavor to generate captions</p>
+      <h2 className="text-2xl font-bold mb-1">🍦 Pick a Scoop</h2>
+      <p className="text-gray-400 text-sm mb-6">Choose a flavor and we&apos;ll scoop up some captions</p>
 
       {selectedId === null ? (
         <div className="space-y-2 max-w-lg">
           {flavors.length === 0 ? (
             <div className="text-center py-12 text-gray-500">
               <p className="text-4xl mb-3">🍽️</p>
-              <p>No flavors yet. Create one first.</p>
+              <p>The case is empty. Craft a flavor first.</p>
             </div>
           ) : (
             flavors.map((f) => (
               <button
                 key={f.id}
                 onClick={() => setSelectedId(f.id)}
-                className="w-full text-left px-4 py-3.5 rounded-xl border border-gray-800 bg-gray-900/50 hover:border-blue-500/40 hover:bg-blue-950/20 transition-all group"
+                className="w-full text-left px-4 py-3.5 rounded-xl border border-gray-800 bg-gray-900/50 hover:border-pink-500/40 hover:bg-pink-950/20 transition-all group"
               >
-                <div className="font-medium group-hover:text-blue-300 transition-colors">{f.description}</div>
+                <div className="font-medium group-hover:text-pink-300 transition-colors">{f.description}</div>
                 <div className="text-xs text-gray-500 mt-0.5">/{f.slug}</div>
               </button>
             ))

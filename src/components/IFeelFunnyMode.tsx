@@ -43,7 +43,7 @@ export function IFeelFunnyMode({ onBack }: { onBack: () => void }) {
                 setCaption("");
                 setSubmitted(false);
               }}
-              className="flex-1 py-2.5 rounded-xl border border-orange-500/40 text-orange-400 hover:bg-orange-950/20 transition-colors text-sm"
+              className="flex-1 py-2.5 rounded-xl border border-amber-500/40 text-amber-400 hover:bg-amber-950/20 transition-colors text-sm"
             >
               New photo
             </button>
@@ -58,13 +58,13 @@ export function IFeelFunnyMode({ onBack }: { onBack: () => void }) {
       <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 mb-6 transition-colors">
         ← Back
       </button>
-      <h2 className="text-2xl font-bold mb-1">I Feel Funny</h2>
-      <p className="text-gray-400 text-sm mb-6">Upload a photo and write your own caption</p>
+      <h2 className="text-2xl font-bold mb-1">🍡 I Feel Funny</h2>
+      <p className="text-gray-400 text-sm mb-6">Upload a photo and add your own caption — no AI needed</p>
 
       <div className="max-w-md space-y-4">
         <div
           onClick={() => inputRef.current?.click()}
-          className="border-2 border-dashed border-gray-700 rounded-2xl p-8 text-center cursor-pointer hover:border-orange-500/50 hover:bg-orange-950/10 transition-all"
+          className="border-2 border-dashed border-gray-700 rounded-2xl p-8 text-center cursor-pointer hover:border-amber-500/50 hover:bg-amber-950/10 transition-all"
         >
           {preview ? (
             <img src={preview} alt="Preview" className="max-h-60 mx-auto rounded-xl object-contain" />
@@ -93,13 +93,13 @@ export function IFeelFunnyMode({ onBack }: { onBack: () => void }) {
                 onChange={(e) => setCaption(e.target.value)}
                 rows={3}
                 placeholder="Write something funny..."
-                className="w-full px-4 py-3 rounded-xl border border-gray-700 bg-gray-900/80 focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm resize-none"
+                className="w-full px-4 py-3 rounded-xl border border-gray-700 bg-gray-900/80 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm resize-none"
               />
             </div>
             <button
               onClick={() => setSubmitted(true)}
               disabled={!caption.trim()}
-              className="w-full py-3 bg-orange-600 hover:bg-orange-500 disabled:opacity-40 text-white rounded-xl font-medium transition-colors text-sm"
+              className="w-full py-3 bg-amber-600 hover:bg-amber-500 disabled:opacity-40 text-white rounded-xl font-medium transition-colors text-sm"
             >
               😄 Preview My Caption
             </button>

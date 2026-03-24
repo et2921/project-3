@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Humor Flavor Tool",
-  description: "Manage humor flavors and prompt chains",
+  title: "Scoop Shop",
+  description: "Craft humor flavors and generate captions",
 };
 
 export default function RootLayout({
@@ -29,7 +29,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors">
+      <body className="min-h-full flex flex-col bg-white dark:bg-[#110a0e] text-gray-900 dark:text-gray-100 transition-colors">
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
