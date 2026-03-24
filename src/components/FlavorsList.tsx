@@ -2,24 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
 import { HumorFlavor } from "@/types";
 import { FlavorFormModal } from "./FlavorFormModal";
 
 export function FlavorsList({ initialFlavors }: { initialFlavors: HumorFlavor[] }) {
   const [flavors, setFlavors] = useState<HumorFlavor[]>(initialFlavors);
   const [showCreate, setShowCreate] = useState(false);
-  const [deleting, setDeleting] = useState<number | null>(null);
-
-  async function handleDelete(id: number) {
-    if (!confirm("Delete this humor flavor? All its steps will also be deleted.")) return;
-    setDeleting(id);
-    const supabase = createClient();
-    await supabase.from("humor_flavor_steps").delete().eq("humor_flavor_id", id);
-    await supabase.from("humor_flavors").delete().eq("id", id);
-    setFlavors((prev) => prev.filter((f) => f.id !== id));
-    setDeleting(null);
-  }
 
   function handleCreated(flavor: HumorFlavor) {
     setFlavors((prev) => [flavor, ...prev]);
@@ -63,13 +51,6 @@ export function FlavorsList({ initialFlavors }: { initialFlavors: HumorFlavor[] 
                 >
                   Edit
                 </Link>
-                <button
-                  onClick={() => handleDelete(flavor.id)}
-                  disabled={deleting === flavor.id}
-                  className="px-3 py-1.5 text-sm rounded-lg border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 disabled:opacity-50 transition-colors"
-                >
-                  {deleting === flavor.id ? "..." : "Delete"}
-                </button>
               </div>
             </div>
           ))}

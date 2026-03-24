@@ -21,6 +21,9 @@ export function NavBar({ userEmail }: { userEmail: string }) {
         <Link href="/flavors" className="font-semibold text-lg hover:opacity-80 transition-opacity">
           Humor Flavor Tool
         </Link>
+        <Link href="/flavors/manage" className="text-sm text-gray-400 hover:text-gray-200 transition-colors">
+          Manage
+        </Link>
         <div className="flex items-center gap-4">
           <ThemeToggle />
           <span className="text-sm text-gray-500 hidden sm:block">{userEmail}</span>
