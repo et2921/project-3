@@ -10,13 +10,6 @@ export async function GET(request: Request) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error && data.user) {
-      const email = data.user.email ?? "";
-      if (!email.endsWith("@columbia.com")) {
-        await supabase.auth.signOut();
-        return NextResponse.redirect(
-          `${origin}/login?error=domain`
-        );
-      }
       return NextResponse.redirect(`${origin}/`);
     }
   }

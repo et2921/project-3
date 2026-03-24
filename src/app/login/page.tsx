@@ -13,9 +13,7 @@ function LoginForm() {
   const urlError = searchParams.get("error");
 
   const errorMessage =
-    urlError === "domain"
-      ? "Access restricted to @columbia.com accounts."
-      : urlError === "auth"
+    urlError === "auth"
       ? "Authentication failed. Please try again."
       : error;
 
@@ -27,9 +25,6 @@ function LoginForm() {
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
-        queryParams: {
-          hd: "columbia.com",
-        },
       },
     });
     if (authError) {
@@ -45,7 +40,7 @@ function LoginForm() {
       </div>
       <div className="w-full max-w-sm">
         <h1 className="text-2xl font-bold mb-2 text-center">Humor Flavor Tool</h1>
-        <p className="text-sm text-gray-500 text-center mb-8">Sign in with your @columbia.com account</p>
+        <p className="text-sm text-gray-500 text-center mb-8">Sign in with your Google account</p>
         {errorMessage && (
           <p className="text-sm text-red-500 mb-4 text-center">{errorMessage}</p>
         )}
