@@ -42,6 +42,7 @@ export function NewFlavorWizard({ inputTypes, outputTypes, models, stepTypes, on
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState("");
   const [createdFlavor, setCreatedFlavor] = useState<HumorFlavor | null>(null);
+  const [stepsGenerated, setStepsGenerated] = useState(false);
 
   const progress = [25, 50, 75, 100][step] ?? 100;
 
@@ -73,33 +74,36 @@ export function NewFlavorWizard({ inputTypes, outputTypes, models, stepTypes, on
         body: JSON.stringify({ flavorName: name, humorType, tone, instructions }),
       });
 
-      if (!res.ok) throw new Error("AI generation failed. Make sure ANTHROPIC_API_KEY is set.");
-      const { steps } = await res.json();
+      if (res.ok) {
+        const { steps } = await res.json();
 
-      const imageInput = inputTypes.find((t) => t.slug?.toLowerCase().includes("image")) ?? inputTypes[0];
-      const textInput = inputTypes.find((t) => t.slug?.toLowerCase().includes("text")) ?? inputTypes[0];
-      const textOutput = outputTypes.find((t) => t.slug?.toLowerCase().includes("text")) ?? outputTypes[0];
-      const defaultModel = models[0];
-      const defaultStepType = stepTypes[0];
+        const imageInput = inputTypes.find((t) => t.slug?.toLowerCase().includes("image")) ?? inputTypes[0];
+        const textInput = inputTypes.find((t) => t.slug?.toLowerCase().includes("text")) ?? inputTypes[0];
+        const textOutput = outputTypes.find((t) => t.slug?.toLowerCase().includes("text")) ?? outputTypes[0];
+        const defaultModel = models[0];
+        const defaultStepType = stepTypes[0];
 
-      const stepPayloads = steps.map(
-        (s: { description: string; llm_system_prompt: string; llm_user_prompt: string }, i: number) => ({
-          humor_flavor_id: flavor.id,
-          order_by: i + 1,
-          description: s.description,
-          llm_system_prompt: s.llm_system_prompt,
-          llm_user_prompt: s.llm_user_prompt,
-          llm_temperature: 0.8,
-          llm_input_type_id: i === 0 ? (imageInput?.id ?? 1) : (textInput?.id ?? 1),
-          llm_output_type_id: textOutput?.id ?? 1,
-          llm_model_id: defaultModel?.id ?? 1,
-          humor_flavor_step_type_id: defaultStepType?.id ?? 1,
-          created_by_user_id: user.id,
-          modified_by_user_id: user.id,
-        })
-      );
+        const stepPayloads = steps.map(
+          (s: { description: string; llm_system_prompt: string; llm_user_prompt: string }, i: number) => ({
+            humor_flavor_id: flavor.id,
+            order_by: i + 1,
+            description: s.description,
+            llm_system_prompt: s.llm_system_prompt,
+            llm_user_prompt: s.llm_user_prompt,
+            llm_temperature: 0.8,
+            llm_input_type_id: i === 0 ? (imageInput?.id ?? 1) : (textInput?.id ?? 1),
+            llm_output_type_id: textOutput?.id ?? 1,
+            llm_model_id: defaultModel?.id ?? 1,
+            humor_flavor_step_type_id: defaultStepType?.id ?? 1,
+            created_by_user_id: user.id,
+            modified_by_user_id: user.id,
+          })
+        );
 
-      await supabase.from("humor_flavor_steps").insert(stepPayloads);
+        await supabase.from("humor_flavor_steps").insert(stepPayloads);
+        setStepsGenerated(true);
+      }
+
       setCreatedFlavor(flavor);
       setStep(4);
     } catch (err) {
@@ -118,12 +122,20 @@ export function NewFlavorWizard({ inputTypes, outputTypes, models, stepTypes, on
         <div className="flex items-center gap-3 mb-6 p-4 rounded-xl bg-violet-950/30 border border-violet-500/30">
           <span className="text-3xl">✅</span>
           <div>
-            <p className="font-semibold text-violet-400">Your flavor is churned! 🎉</p>
-            <p className="text-sm text-gray-400">&ldquo;{createdFlavor.description}&rdquo; — 3 AI-generated scoops</p>
+            <p className="font-semibold text-violet-400">Your flavor is created! 🎉</p>
+            <p className="text-sm text-gray-400">&ldquo;{createdFlavor.description}&rdquo;{stepsGenerated ? " — 3 AI-generated scoops" : " — add steps to use it"}</p>
           </div>
         </div>
-        <h3 className="font-semibold text-lg mb-4">Test your new flavor</h3>
-        <CaptionGenerator flavorId={createdFlavor.id} />
+        {stepsGenerated ? (
+          <>
+            <h3 className="font-semibold text-lg mb-4">Test your new flavor</h3>
+            <CaptionGenerator flavorId={createdFlavor.id} />
+          </>
+        ) : (
+          <div className="p-4 rounded-xl bg-yellow-950/30 border border-yellow-800 text-yellow-400 text-sm">
+            AI step generation is unavailable right now. Go to the flavor&apos;s Steps tab to add steps manually before generating captions.
+          </div>
+        )}
       </div>
     );
   }
