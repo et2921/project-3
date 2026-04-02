@@ -87,6 +87,10 @@ export function FlavorDetail({
           stepTypes={stepTypes}
           userId={userId}
         />
+      ) : initialSteps.length === 0 ? (
+        <div className="p-4 rounded-xl bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800 text-yellow-700 dark:text-yellow-400 text-sm">
+          This flavor has no steps yet. Add steps in the Steps tab before generating captions.
+        </div>
       ) : (
         <CaptionGenerator flavorId={flavor.id} />
       )}
