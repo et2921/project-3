@@ -1,11 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { LlmInputType, LlmOutputType, LlmModel, HumorFlavorStepType, HumorFlavor, HumorFlavorStep } from "@/types";
-import Link from "next/link";
-import { StepsList } from "./StepsList";
-import { CaptionGenerator } from "./CaptionGenerator";
+import { LlmInputType, LlmOutputType, LlmModel, HumorFlavorStepType } from "@/types";
 
 interface Props {
   inputTypes: LlmInputType[];
@@ -36,6 +34,7 @@ function slugify(text: string) {
 }
 
 export function NewFlavorWizard({ inputTypes, outputTypes, models, stepTypes, onBack }: Props) {
+  const router = useRouter();
   const [step, setStep] = useState(0);
   const [name, setName] = useState("");
   const [humorType, setHumorType] = useState("");
@@ -43,10 +42,6 @@ export function NewFlavorWizard({ inputTypes, outputTypes, models, stepTypes, on
   const [instructions, setInstructions] = useState("");
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState("");
-  const [createdFlavor, setCreatedFlavor] = useState<HumorFlavor | null>(null);
-  const [initialSteps, setInitialSteps] = useState<HumorFlavorStep[]>([]);
-  const [userId, setUserId] = useState("");
-  const [activeTab, setActiveTab] = useState<"steps" | "test">("steps");
 
   const progress = [25, 50, 75, 100][step] ?? 100;
 
@@ -58,8 +53,6 @@ export function NewFlavorWizard({ inputTypes, outputTypes, models, stepTypes, on
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-
-      setUserId(user.id);
 
       const { data: flavor, error: flavorErr } = await supabase
         .from("humor_flavors")
@@ -106,83 +99,14 @@ export function NewFlavorWizard({ inputTypes, outputTypes, models, stepTypes, on
           })
         );
 
-        const { data: savedSteps } = await supabase
-          .from("humor_flavor_steps")
-          .insert(stepPayloads)
-          .select();
-
-        setInitialSteps(savedSteps ?? []);
+        await supabase.from("humor_flavor_steps").insert(stepPayloads);
       }
 
-      setCreatedFlavor(flavor);
-      setStep(4);
+      router.push(`/flavors/${flavor.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
-    } finally {
       setGenerating(false);
     }
-  }
-
-  if (step === 4 && createdFlavor) {
-    return (
-      <div>
-        <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 mb-6 transition-colors">
-          ← Back
-        </button>
-        <div className="flex items-center justify-between gap-3 mb-6 p-4 rounded-xl bg-violet-950/30 border border-violet-500/30">
-          <div className="flex items-center gap-3">
-            <span className="text-3xl">✅</span>
-            <div>
-              <p className="font-semibold text-violet-400">Flavor created! 🎉</p>
-              <p className="text-sm text-gray-400">&ldquo;{createdFlavor.description}&rdquo;{initialSteps.length > 0 ? ` — ${initialSteps.length} steps generated` : " — add steps below to use it"}</p>
-            </div>
-          </div>
-          <Link
-            href={`/flavors/${createdFlavor.id}`}
-            className="shrink-0 px-3 py-1.5 text-sm rounded-lg border border-violet-500/50 text-violet-400 hover:bg-violet-950/50 transition-colors"
-          >
-            View Flavor →
-          </Link>
-        </div>
-
-        <div className="flex gap-1 mb-6 border-b border-gray-200 dark:border-gray-800">
-          <button
-            onClick={() => setActiveTab("steps")}
-            className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
-              activeTab === "steps"
-                ? "border-violet-500 text-violet-400"
-                : "border-transparent text-gray-500 hover:text-gray-300"
-            }`}
-          >
-            Steps
-          </button>
-          <button
-            onClick={() => setActiveTab("test")}
-            className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
-              activeTab === "test"
-                ? "border-violet-500 text-violet-400"
-                : "border-transparent text-gray-500 hover:text-gray-300"
-            }`}
-          >
-            Test Captions
-          </button>
-        </div>
-
-        {activeTab === "steps" ? (
-          <StepsList
-            flavorId={createdFlavor.id}
-            initialSteps={initialSteps}
-            inputTypes={inputTypes}
-            outputTypes={outputTypes}
-            models={models}
-            stepTypes={stepTypes}
-            userId={userId}
-          />
-        ) : (
-          <CaptionGenerator flavorId={createdFlavor.id} />
-        )}
-      </div>
-    );
   }
 
   return (
@@ -301,7 +225,7 @@ export function NewFlavorWizard({ inputTypes, outputTypes, models, stepTypes, on
               {generating ? (
                 <>
                   <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Generating...
+                  Creating...
                 </>
               ) : "🍨 Churn this Flavor"}
             </button>
