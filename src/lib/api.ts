@@ -1,5 +1,13 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
+async function checkResponse(res: Response, label: string) {
+  if (!res.ok) {
+    let detail = "";
+    try { detail = await res.text(); } catch { /* ignore */ }
+    throw new Error(`${label} (${res.status}${detail ? `: ${detail}` : ""})`);
+  }
+}
+
 export async function generatePresignedUrl(
   token: string,
   contentType: string
@@ -12,7 +20,7 @@ export async function generatePresignedUrl(
     },
     body: JSON.stringify({ contentType }),
   });
-  if (!res.ok) throw new Error("Failed to generate presigned URL");
+  await checkResponse(res, "Failed to generate presigned URL");
   return res.json();
 }
 
@@ -25,7 +33,7 @@ export async function uploadImageToPresignedUrl(
     headers: { "Content-Type": file.type },
     body: file,
   });
-  if (!res.ok) throw new Error("Failed to upload image");
+  await checkResponse(res, "Failed to upload image");
 }
 
 export async function registerImageUrl(
@@ -40,7 +48,7 @@ export async function registerImageUrl(
     },
     body: JSON.stringify({ imageUrl, isCommonUse: false }),
   });
-  if (!res.ok) throw new Error("Failed to register image URL");
+  await checkResponse(res, "Failed to register image URL");
   return res.json();
 }
 
@@ -60,6 +68,6 @@ export async function generateCaptions(
     },
     body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error("Failed to generate captions");
+  await checkResponse(res, "Failed to generate captions");
   return res.json();
 }
