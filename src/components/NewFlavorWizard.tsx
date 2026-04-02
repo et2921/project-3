@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { LlmInputType, LlmOutputType, LlmModel, HumorFlavorStepType, HumorFlavor } from "@/types";
+import { LlmInputType, LlmOutputType, LlmModel, HumorFlavorStepType, HumorFlavor, HumorFlavorStep } from "@/types";
+import { StepsList } from "./StepsList";
 import { CaptionGenerator } from "./CaptionGenerator";
 
 interface Props {
@@ -42,7 +43,9 @@ export function NewFlavorWizard({ inputTypes, outputTypes, models, stepTypes, on
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState("");
   const [createdFlavor, setCreatedFlavor] = useState<HumorFlavor | null>(null);
-  const [stepsGenerated, setStepsGenerated] = useState(false);
+  const [initialSteps, setInitialSteps] = useState<HumorFlavorStep[]>([]);
+  const [userId, setUserId] = useState("");
+  const [activeTab, setActiveTab] = useState<"steps" | "test">("steps");
 
   const progress = [25, 50, 75, 100][step] ?? 100;
 
@@ -54,6 +57,8 @@ export function NewFlavorWizard({ inputTypes, outputTypes, models, stepTypes, on
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
+
+      setUserId(user.id);
 
       const { data: flavor, error: flavorErr } = await supabase
         .from("humor_flavors")
@@ -100,8 +105,12 @@ export function NewFlavorWizard({ inputTypes, outputTypes, models, stepTypes, on
           })
         );
 
-        await supabase.from("humor_flavor_steps").insert(stepPayloads);
-        setStepsGenerated(true);
+        const { data: savedSteps } = await supabase
+          .from("humor_flavor_steps")
+          .insert(stepPayloads)
+          .select();
+
+        setInitialSteps(savedSteps ?? []);
       }
 
       setCreatedFlavor(flavor);
@@ -122,19 +131,46 @@ export function NewFlavorWizard({ inputTypes, outputTypes, models, stepTypes, on
         <div className="flex items-center gap-3 mb-6 p-4 rounded-xl bg-violet-950/30 border border-violet-500/30">
           <span className="text-3xl">✅</span>
           <div>
-            <p className="font-semibold text-violet-400">Your flavor is created! 🎉</p>
-            <p className="text-sm text-gray-400">&ldquo;{createdFlavor.description}&rdquo;{stepsGenerated ? " — 3 AI-generated scoops" : " — add steps to use it"}</p>
+            <p className="font-semibold text-violet-400">Flavor created! 🎉</p>
+            <p className="text-sm text-gray-400">&ldquo;{createdFlavor.description}&rdquo;{initialSteps.length > 0 ? ` — ${initialSteps.length} steps generated` : " — add steps below to use it"}</p>
           </div>
         </div>
-        {stepsGenerated ? (
-          <>
-            <h3 className="font-semibold text-lg mb-4">Test your new flavor</h3>
-            <CaptionGenerator flavorId={createdFlavor.id} />
-          </>
+
+        <div className="flex gap-1 mb-6 border-b border-gray-200 dark:border-gray-800">
+          <button
+            onClick={() => setActiveTab("steps")}
+            className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
+              activeTab === "steps"
+                ? "border-violet-500 text-violet-400"
+                : "border-transparent text-gray-500 hover:text-gray-300"
+            }`}
+          >
+            Steps
+          </button>
+          <button
+            onClick={() => setActiveTab("test")}
+            className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
+              activeTab === "test"
+                ? "border-violet-500 text-violet-400"
+                : "border-transparent text-gray-500 hover:text-gray-300"
+            }`}
+          >
+            Test Captions
+          </button>
+        </div>
+
+        {activeTab === "steps" ? (
+          <StepsList
+            flavorId={createdFlavor.id}
+            initialSteps={initialSteps}
+            inputTypes={inputTypes}
+            outputTypes={outputTypes}
+            models={models}
+            stepTypes={stepTypes}
+            userId={userId}
+          />
         ) : (
-          <div className="p-4 rounded-xl bg-yellow-950/30 border border-yellow-800 text-yellow-400 text-sm">
-            AI step generation is unavailable right now. Go to the flavor&apos;s Steps tab to add steps manually before generating captions.
-          </div>
+          <CaptionGenerator flavorId={createdFlavor.id} />
         )}
       </div>
     );
