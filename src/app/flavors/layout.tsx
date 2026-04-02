@@ -12,16 +12,6 @@ export default async function FlavorsLayout({
 
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("is_superadmin, is_matrix_admin")
-    .eq("id", user.id)
-    .single();
-
-  if (!profile?.is_superadmin && !profile?.is_matrix_admin) {
-    redirect("/unauthorized");
-  }
-
   return (
     <div className="min-h-screen flex flex-col">
       <NavBar userEmail={user.email ?? ""} />
