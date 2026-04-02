@@ -2,14 +2,14 @@
 
 import { useState, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { generatePresignedUrl, uploadImageToPresignedUrl } from "@/lib/api";
+import { generatePresignedUrl, uploadImageToPresignedUrl, registerImageUrl, generateCaptions } from "@/lib/api";
 
 export function CaptionGenerator({ flavorId }: { flavorId: number }) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
-  const [captions, setCaptions] = useState<string[] | null>(null);
+  const [captions, setCaptions] = useState<unknown[] | null>(null);
   const [error, setError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -40,19 +40,11 @@ export function CaptionGenerator({ flavorId }: { flavorId: number }) {
       setStatus("Uploading image...");
       await uploadImageToPresignedUrl(presignedUrl, file);
 
+      setStatus("Registering image...");
+      const { imageId } = await registerImageUrl(token, cdnUrl);
+
       setStatus("Generating captions...");
-      const res = await fetch("/api/run-flavor-steps", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageUrl: cdnUrl, flavorId }),
-      });
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error ?? `Failed to generate captions (${res.status})`);
-      }
-
-      const result = await res.json();
+      const result = await generateCaptions(token, imageId, flavorId);
       setCaptions(result);
       setStatus("");
     } catch (err) {
@@ -114,12 +106,16 @@ export function CaptionGenerator({ flavorId }: { flavorId: number }) {
         <div>
           <h3 className="font-semibold mb-3">Generated Captions ({captions.length})</h3>
           <div className="space-y-2">
-            {captions.map((caption, i) => (
-              <div key={i} className="p-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-                <span className="text-xs text-gray-400 font-medium">#{i + 1}</span>
-                <p className="mt-1 text-sm">{typeof caption === "string" ? caption : JSON.stringify(caption)}</p>
-              </div>
-            ))}
+            {captions.map((caption, i) => {
+              const c = caption as Record<string, unknown>;
+              const text = (c.caption_text as string) || (c.caption as string) || (c.text as string) || (c.content as string) || (typeof caption === "string" ? caption : JSON.stringify(caption));
+              return (
+                <div key={i} className="p-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+                  <span className="text-xs text-gray-400 font-medium">#{i + 1}</span>
+                  <p className="mt-1 text-sm">{text}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
