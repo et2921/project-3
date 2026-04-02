@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { LlmInputType, LlmOutputType, LlmModel, HumorFlavorStepType, HumorFlavor, HumorFlavorStep } from "@/types";
+import Link from "next/link";
 import { StepsList } from "./StepsList";
 import { CaptionGenerator } from "./CaptionGenerator";
 
@@ -128,12 +129,20 @@ export function NewFlavorWizard({ inputTypes, outputTypes, models, stepTypes, on
         <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 mb-6 transition-colors">
           ← Back
         </button>
-        <div className="flex items-center gap-3 mb-6 p-4 rounded-xl bg-violet-950/30 border border-violet-500/30">
-          <span className="text-3xl">✅</span>
-          <div>
-            <p className="font-semibold text-violet-400">Flavor created! 🎉</p>
-            <p className="text-sm text-gray-400">&ldquo;{createdFlavor.description}&rdquo;{initialSteps.length > 0 ? ` — ${initialSteps.length} steps generated` : " — add steps below to use it"}</p>
+        <div className="flex items-center justify-between gap-3 mb-6 p-4 rounded-xl bg-violet-950/30 border border-violet-500/30">
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">✅</span>
+            <div>
+              <p className="font-semibold text-violet-400">Flavor created! 🎉</p>
+              <p className="text-sm text-gray-400">&ldquo;{createdFlavor.description}&rdquo;{initialSteps.length > 0 ? ` — ${initialSteps.length} steps generated` : " — add steps below to use it"}</p>
+            </div>
           </div>
+          <Link
+            href={`/flavors/${createdFlavor.id}`}
+            className="shrink-0 px-3 py-1.5 text-sm rounded-lg border border-violet-500/50 text-violet-400 hover:bg-violet-950/50 transition-colors"
+          >
+            View Flavor →
+          </Link>
         </div>
 
         <div className="flex gap-1 mb-6 border-b border-gray-200 dark:border-gray-800">
