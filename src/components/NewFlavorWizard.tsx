@@ -76,11 +76,14 @@ export function NewFlavorWizard({ inputTypes, outputTypes, models, stepTypes, on
       if (res.ok) {
         const { steps } = await res.json();
 
-        const imageInput = inputTypes.find((t) => t.slug?.toLowerCase().includes("image")) ?? inputTypes[0];
-        const textInput = inputTypes.find((t) => t.slug?.toLowerCase().includes("text")) ?? inputTypes[0];
-        const textOutput = outputTypes.find((t) => t.slug?.toLowerCase().includes("text")) ?? outputTypes[0];
+        const imageInput = inputTypes.find((t) => t.slug?.includes("image")) ?? inputTypes[0];
+        const textInput = inputTypes.find((t) => t.slug?.includes("text")) ?? inputTypes[0];
+        const stringOutput = outputTypes.find((t) => t.slug === "string") ?? outputTypes[0];
+        const arrayOutput = outputTypes.find((t) => t.slug === "array") ?? outputTypes[outputTypes.length - 1];
+        const imageDescType = stepTypes.find((t) => t.slug === "image-description") ?? stepTypes[0];
+        const generalType = stepTypes.find((t) => t.slug === "general") ?? stepTypes[stepTypes.length - 1];
         const defaultModel = models[0];
-        const defaultStepType = stepTypes[0];
+        const lastIndex = steps.length - 1;
 
         const stepPayloads = steps.map(
           (s: { description: string; llm_system_prompt: string; llm_user_prompt: string }, i: number) => ({
@@ -90,10 +93,10 @@ export function NewFlavorWizard({ inputTypes, outputTypes, models, stepTypes, on
             llm_system_prompt: s.llm_system_prompt,
             llm_user_prompt: s.llm_user_prompt,
             llm_temperature: 0.8,
-            llm_input_type_id: i === 0 ? (imageInput?.id ?? 1) : (textInput?.id ?? 1),
-            llm_output_type_id: textOutput?.id ?? 1,
+            llm_input_type_id: i === 0 ? (imageInput?.id ?? 1) : (textInput?.id ?? 2),
+            llm_output_type_id: i === lastIndex ? (arrayOutput?.id ?? 2) : (stringOutput?.id ?? 1),
             llm_model_id: defaultModel?.id ?? 1,
-            humor_flavor_step_type_id: defaultStepType?.id ?? 1,
+            humor_flavor_step_type_id: i === 0 ? (imageDescType?.id ?? 2) : (generalType?.id ?? 3),
             created_by_user_id: user.id,
             modified_by_user_id: user.id,
           })
